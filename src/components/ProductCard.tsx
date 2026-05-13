@@ -4,16 +4,17 @@
  */
 
 import { motion } from 'motion/react';
-import { Star, ShoppingCart, Plus, Check } from 'lucide-react';
+import { Star, ShoppingCart, Plus, Check, Eye } from 'lucide-react';
 import { Product } from '../data';
 import { useState } from 'react';
 
 interface ProductCardProps {
   product: Product;
   onAddToCart: (product: Product) => void;
+  onQuickView: (product: Product) => void;
 }
 
-export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+export default function ProductCard({ product, onAddToCart, onQuickView }: ProductCardProps) {
   const [added, setAdded] = useState(false);
 
   const handleAdd = () => {
@@ -39,6 +40,18 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-100"
           referrerPolicy="no-referrer"
         />
+        
+        {/* Quick View Overlay */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+          <button 
+            onClick={() => onQuickView(product)}
+            className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:bg-brand transition-all scale-90 group-hover:scale-100 duration-300 shadow-xl"
+            title="Quick View"
+          >
+            <Eye size={20} />
+          </button>
+        </div>
+
         {product.featured && (
           <div className="absolute top-4 right-4">
             <span className="px-3 py-1 rounded-full bg-brand text-black text-[10px] font-bold uppercase tracking-wider">

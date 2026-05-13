@@ -6,7 +6,11 @@
 import { motion } from 'motion/react';
 import { ArrowRight, Zap } from 'lucide-react';
 
-export default function Hero() {
+interface HeroProps {
+  onShopNow: () => void;
+}
+
+export default function Hero({ onShopNow }: HeroProps) {
   return (
     <section className="relative px-8 pt-40 pb-20 overflow-hidden">
       <div className="max-w-7xl mx-auto flex flex-col items-start">
@@ -31,20 +35,26 @@ export default function Hero() {
           </p>
           
           <div className="flex items-center gap-4">
-            <a href="#shop" className="px-6 py-3 bg-brand text-black font-bold rounded-full hover:bg-white transition-all text-xs uppercase tracking-widest flex items-center gap-2 group">
+            <button 
+              onClick={onShopNow}
+              className="px-6 py-3 bg-brand text-black font-bold rounded-full hover:bg-white transition-all text-xs uppercase tracking-widest flex items-center gap-2 group cursor-pointer"
+            >
               Start Shopping
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </a>
-            <div className="hidden sm:flex -space-x-3">
+            </button>
+            <button 
+              onClick={onShopNow}
+              className="hidden sm:flex items-center -space-x-3 group cursor-pointer"
+            >
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0A0A0C] bg-zinc-800 flex items-center justify-center overflow-hidden">
+                <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0A0A0C] bg-zinc-800 flex items-center justify-center overflow-hidden group-hover:border-brand transition-colors">
                    <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="user" className="w-full h-full object-cover" />
                 </div>
               ))}
-              <div className="px-3 flex items-center text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">
+              <div className="px-3 flex items-center text-[10px] font-bold text-zinc-500 uppercase tracking-tighter group-hover:text-white transition-colors">
                 +2k HAPPY USERS
               </div>
-            </div>
+            </button>
           </div>
         </motion.div>
       </div>
