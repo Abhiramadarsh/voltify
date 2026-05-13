@@ -1,0 +1,78 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 0. Default Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Primitives & Helpers ---
+    
+    function isSignedIn() { 
+      return request.auth != null; 
+    }
+    
+    function isEmailVerified() {
+      // In production, we mandate email verification.
+      return request.auth.token.email_verified == true;
+    }
+    
+    function isOwner(userId) { 
+      return isSignedIn() && request.auth.uid == userId; 
+    }
+    
+    function incoming() { 
+      return request.resource.data; 
+    }
+    
+    function existing() { 
+      return resource.data; 
+    }
+    
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+
+    // --- Entity Validations ---
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email'])
+          && data.uid is string && data.uid == request.auth.uid
+          && data.email is string && data.email == request.auth.token.email
+          && (data.keys().size() <= 6) // Max fields: uid, name, email, photoURL, createdAt, lastLogin
+          && (!('name' in data) || (data.name is string && data.name.size() <= 100))
+          && (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 1000))
+          && (!('createdAt' in data) || data.createdAt is timestamp)
+          && (!('lastLogin' in data) || data.lastLogin is timestamp);
+    }
+
+    // --- Path Rules ---
+
+    match /users/{userId} {
+      // Security Pillar: PII Isolation (Only owner can read their profile)
+      allow get: if isOwner(userId);
+      
+      // Security Pillar: Secure List Queries (Explicitly deny listing profiles)
+      allow list: if false;
+
+      // Security Pillar: Validation Blueprints & Identity Integrity
+      allow create: if isOwner(userId)
+                    && isValidId(userId)
+                    && isValidUser(incoming())
+                    && incoming().createdAt == request.time
+                    && incoming().lastLogin == request.time;
+
+      allow update: if isOwner(userId)
+                    && isValidId(userId)
+                    && isValidUser(incoming())
+                    && incoming().uid == existing().uid // Immutable
+                    && incoming().createdAt == existing().createdAt // Immutable
+                    && incoming().lastLogin == request.time
+                    && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'photoURL', 'lastLogin']);
+      
+      allow delete: if false; // Account deletion not allowed via client by default
+    }
+  }
+}
