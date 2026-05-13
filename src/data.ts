@@ -83,7 +83,7 @@ export const PRODUCTS: Product[] = [
     description: 'Aluminum stand with built-in USB 3.0 ports.',
     price: 119,
     category: 'gaming',
-    image: 'https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1760377821978-636dcc65eb48?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     rating: 4.4
   },
 
