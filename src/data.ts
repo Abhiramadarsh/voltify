@@ -48,7 +48,7 @@ export const PRODUCTS: Product[] = [
   // LED Lights
   {
     id: 'l1',
-    name: 'NeonFlow RGB Strip',
+    name: 'RGB Lamb',
     description: '5m adhesive RGBIC LED strip with app and voice control.',
     price: 89,
     category: 'led',
